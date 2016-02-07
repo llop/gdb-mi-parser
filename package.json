@@ -1,0 +1,15 @@
+{
+  "name": "gdb-mi-parser",
+  "version": "1.0.0",
+  "description": "Parses gdb mi output into js objects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gdb-mi",
+    "output"
+  ],
+  "author": "Albert Lobo <albertlobo1981@yahoo.es> (http://www.moleculardensity.net)",
+  "license": "MIT"
+}
