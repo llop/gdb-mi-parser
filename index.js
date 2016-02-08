@@ -132,12 +132,22 @@ function nextValue(line, i) {
   else if (line[i]=='[') return nextList(line, i);    // parse list
 }
 
+// https://mathiasbynens.be/notes/javascript-escapes
+function simpleUnescape(line) {
+  return line.replace(/\\\\/g, '\\')  // backslash
+             .replace(/\\n/g, '\n')   // line feed
+             .replace(/\\r/g, '\r')   // carriage return
+             .replace(/\\t/g, '\t')   // horizontal tab
+             .replace(/\\'/g, '\'')   // single quote
+             .replace(/\\"/g, '\"');  // double quote
+}
+
 function nextConst(line, i) {
   var j = i+1;
   while (j<line.length) {
     if (line[j]=='\\') ++j;
     else if (line[j]=='"') {
-      var cString = trim(line.substring(i+1, j)).replace(/\\/g, '');
+      var cString = simpleUnescape(trim(line.substring(i+1, j)));
       return [j+1, cString];
     }
     ++j;
@@ -208,7 +218,7 @@ function parseGdbMiLine(line) {
   var result = undefined;
   if (recordType=='stream') {
     klass = outputType;
-    result = nextConst(line, i)[1];
+    result = nextConst(line, i+1)[1];
   } else {
     var classResult = nextClass(line, i);
     klass = classResult[1];
