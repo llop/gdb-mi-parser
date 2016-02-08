@@ -1,6 +1,6 @@
 {
   "name": "gdb-mi-parser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parses gdb mi output into js objects",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,10 @@
     "gdb-mi",
     "output"
   ],
+  "repository": { 
+    "type": "git", 
+    "url": "https://github.com/llop/gdb-mi-parser.git"
+  },
   "author": "Albert Lobo <albertlobo1981@yahoo.es> (http://www.moleculardensity.net)",
   "license": "MIT"
 }

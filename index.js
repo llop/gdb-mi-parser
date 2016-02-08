@@ -137,7 +137,7 @@ function nextConst(line, i) {
   while (j<line.length) {
     if (line[j]=='\\') ++j;
     else if (line[j]=='"') {
-      var cString = trim(line.substring(i+1, j)).replace(/\\([*]1)/g, "\$1");
+      var cString = trim(line.substring(i+1, j)).replace(/\\/g, '');
       return [j+1, cString];
     }
     ++j;
