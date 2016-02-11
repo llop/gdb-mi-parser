@@ -115,6 +115,11 @@ function eatWhitespace(line, i) {
   return i;
 }
 
+function eatTupleJunk(line, i) {
+  while (i<line.length && line[i]!=',' && line[i]!='}') ++i;
+  return i;
+}
+
 function eatVariableName(line, i) {
   while (i<line.length && line[i]!='=') ++i;
   return i+1;
@@ -205,6 +210,8 @@ function nextClass(line, i) {
 
 
 function parseGdbMiLine(line) {
+  // A '\\n' can be randomly found trailing some MI output :(
+  if (line.endsWith('\\n')) line = line.substring(0, line.length-2);
   // extract numeric token, if present
   var tokenResult = nextToken(line, eatWhitespace(line, 0));
   var i = eatWhitespace(line, tokenResult[0]);
@@ -259,3 +266,4 @@ function parseGdbMiOut(data) {
 }
 
 module.exports = parseGdbMiOut;
+
