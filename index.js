@@ -109,14 +109,8 @@ var outputTypeMapping = {
  *   * New gdb/mi commands should only output lists containing values
  */
 
-
 function eatWhitespace(line, i) {
   while (i<line.length && (line[i]==' '||line[i]=='\n'||line[i]=='\r'||line[i]=='\t')) ++i;
-  return i;
-}
-
-function eatTupleJunk(line, i) {
-  while (i<line.length && line[i]!=',' && line[i]!='}') ++i;
   return i;
 }
 
@@ -172,7 +166,7 @@ function nextResult(line, i) {
 
 function nextTuple(line, i) {
   var ret = {};
-  while (i<line.length && line[i]!='}') {
+  while (i<line.length && line[i]!='}') {   // INVARIANT: line[i]='{' or line[i]=',' or line[i]='}'
     var result = nextResult(line, i+1);
     ret[ result[1] ] = result[2];
     i = eatWhitespace(line, result[0]);   // i at ',', '}', or line end
@@ -184,17 +178,18 @@ function nextList(line, i) {
   var ret = [];
   while (i<line.length && line[i]!=']') {
     i = eatWhitespace(line, i+1);
-    if (line[i]!='"' && line[i]!='{' || line[i]!='[') {
-      i = eatVariableName(line, i);
-      i = eatWhitespace(line, i);
+    if (line[i]!=']') {
+      if (line[i]!='"' && line[i]!='{' && line[i]!='[') {
+        i = eatVariableName(line, i);
+        i = eatWhitespace(line, i);
+      }
+      var valRes = nextValue(line, i);
+      ret.push(valRes[1]);
+      i = eatWhitespace(line, valRes[0]);
     }
-    var valRes = nextValue(line, i);
-    ret.push(valRes[1]);
-    i = eatWhitespace(line, valRes[0]+1);
   }
   return [i+1, ret];
 }
-
 
 function nextToken(line, i) {
   var j = i;
