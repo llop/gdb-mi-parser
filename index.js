@@ -151,6 +151,8 @@ function nextConst(line, i) {
     }
     ++j;
   }
+  var cString = simpleUnescape(trim(line.substring(i+1, j)));
+  return [j+1, cString];
 }
 
 function nextResult(line, i) {
@@ -158,8 +160,11 @@ function nextResult(line, i) {
   var nameRes = nextVariableName(line, i);
   var varName = nameRes[1];
   i = eatWhitespace(line, nameRes[0]+1);
+
   // extract variable value
   var valRes = nextValue(line, i);
+  if (!valRes) return undefined;
+   
   var varValue = valRes[1];
   return [valRes[0], varName, varValue];
 }
@@ -168,6 +173,8 @@ function nextTuple(line, i) {
   var ret = {};
   while (i<line.length && line[i]!='}') {   // INVARIANT: line[i]='{' or line[i]=',' or line[i]='}'
     var result = nextResult(line, i+1);
+    if (!result) return [i+1, ret];
+    
     ret[ result[1] ] = result[2];
     i = eatWhitespace(line, result[0]);   // i at ',', '}', or line end
   }
@@ -214,6 +221,9 @@ function parseGdbMiLine(line) {
   // both 'async' and 'stream' are 'out-of-band-records'
   var prefix = line[i];
   var recordType = recordTypeMapping[prefix];
+  // anything other than the existing prefixed is invalid output
+  // usually the echo of a command
+  if (recordType == undefined) return undefined;
   var outputType = outputTypeMapping[prefix];
   // discover result or async class
   var klass = undefined;
@@ -247,8 +257,10 @@ function parseGdbMiOut(data) {
       if (line=='(gdb)') hasTerminator = true;
       else {
         var record = parseGdbMiLine(line);
-        if (record.recordType=='result') resultRecord = record;
-        else outOfBandRecords.push(record);
+        if (record != undefined) {
+          if (record.recordType=='result') resultRecord = record;
+          else outOfBandRecords.push(record);
+        }
       }
     }
   }
